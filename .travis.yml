@@ -34,6 +34,7 @@ script:
   # Unit test
   - export DOCKERWORKDIR="$(pwd)"
   - echo $DOCKERWORKDIR
+  - docker run -d --name sonarqube -p 9000:9000 -p 9092:9092 sonarqube
   - docker run --rm --mount type=bind,source="$(pwd)",target=$DOCKERWORKDIR -w=$DOCKERWORKDIR nikhuber/sonar-scanner:latest sonar-scanner
 
 matrix:
