@@ -35,10 +35,11 @@ script:
   - export DOCKERWORKDIR='/project-root'
   - echo $DOCKERWORKDIR
   - docker network create -d bridge sonar
-  - docker run -d --network=sonar --name sonarqube -p 9000:9000 -p 9092:9092 sonarqube
+  - docker run -d --net=sonar --name sonarqube -p 9000:9000 -p 9092:9092 sonarqube
   - docker ps
-  - docker run --rm --net=sonar tutum/curl curl sonarqube:9000
-  - docker run --rm --network=sonar --mount type=bind,source="$(pwd)",target=$DOCKERWORKDIR -w=$DOCKERWORKDIR nikhuber/sonar-scanner:latest sonar-scanner
+  - docker network ls
+  - docker run --rm --net=sonar tutum/curl curl -I sonarqube:9000
+#   - docker run --rm --network=sonar --mount type=bind,source="$(pwd)",target=$DOCKERWORKDIR -w=$DOCKERWORKDIR nikhuber/sonar-scanner:latest sonar-scanner
 
 matrix:
   fast_finish: true
