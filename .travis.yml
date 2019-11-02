@@ -32,7 +32,7 @@ script:
   - bin/ppm status
   - bin/ppm stop
   # Unit test
-  - export DOCKERWORKDIR="$(pwd)"
+  - export DOCKERWORKDIR='/project-root'
   - echo $DOCKERWORKDIR
   - docker network create -d bridge sonar
   - docker run -d --network=sonar --name sonarqube -p 9000:9000 -p 9092:9092 sonarqube
