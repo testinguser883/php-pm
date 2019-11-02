@@ -1,24 +1,48 @@
-before_script:
-  - export VERSION="${CI_PROJECT_NAMESPACE}_${CI_BUILD_ID}_$(date "+%Y-%m-%d-%H:%M:%S")"
-  - export PROJECTROOT=`pwd`
-  - export DOCKERPROJECTROOT='/srv/example/'
+sudo: required
 
-stages:
-  - test
-  - analysis
+services:
+  - docker
 
-unittests:
-  stage: test
-  script:
-    - phpunit --verbose -c phpunit.xml # Log files are configured in phpunit.xml
-  artifacts: # Persist the files that we use as input for the analysis step 
-    paths:
-      - *.xml
-    when: on_success
+language: php
 
-sonar:
-  stage: analysis
-  dependencies: # Include the log files produced during test stage 
-    - unittests
-  script:
-    - docker run --rm --mount type=bind,source=$PROJECTROOT,target=$DOCKERPROJECTROOT --tmpfs $DOCKERPROJECTROOT/.scannerwork -w=$DOCKERPROJECTROOT nikhuber/sonar-scanner:3.0.3.778 sonar-scanner -Dsonar.projectVersion=$VERSION
+php:
+  - 7.0
+
+install:
+  - rm -f ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini
+  - composer validate
+  - composer install
+
+script:
+  # Static analyzer check
+  - if [ $TRAVIS_PHP_VERSION = '7.1' ]; then composer require "phpstan/phpstan:^0.9" && ./vendor/bin/phpstan analyze -c .phpstan.neon --level=4 --no-progress src;fi
+  # Check the code style
+  - if [ $TRAVIS_PHP_VERSION = '7.1' ]; then IFS=$'\n'; COMMIT_SCA_FILES=($(git diff --name-only --diff-filter=ACMRTUXB "${TRAVIS_COMMIT_RANGE}")); unset IFS; fi
+  - if [ $TRAVIS_PHP_VERSION = '7.1' ]; then composer require "friendsofphp/php-cs-fixer:^2.8" && ./vendor/bin/php-cs-fixer fix --config=.php_cs.php -v --dry-run --stop-on-violation --using-cache=no --path-mode=intersection -- "${COMMIT_SCA_FILES[@]}";fi
+  # Unit test
+  - ./vendor/bin/phpunit
+  # Integration test
+  - mkdir web && echo "Hello" > web/index.html
+  - bin/ppm start --workers=1 --bridge=StaticBridge --static-directory=web --max-requests=1 -v &
+  - sleep 5
+  - bin/ppm status
+  - curl -v -f "http://127.0.0.1:8080"
+  - bin/ppm status
+  - curl -v -f "http://127.0.0.1:8080"
+  - bin/ppm status
+  - bin/ppm stop
+  # Unit test
+  - export DOCKERWORKDIR="$(pwd)"
+  - echo $DOCKERWORKDIR
+  - docker network create -d bridge sonar
+  - docker run -d --network=sonar --name sonarqube -p 9000:9000 -p 9092:9092 sonarqube
+  - sleep 20
+  - docker run --rm --network=sonar --mount type=bind,source="$(pwd)",target=$DOCKERWORKDIR -w=$DOCKERWORKDIR nikhuber/sonar-scanner:latest sonar-scanner
+
+matrix:
+  fast_finish: true
+
+# Cache package sources
+cache:
+  directories:
+    - $HOME/.composer/cache
