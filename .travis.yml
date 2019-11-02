@@ -39,6 +39,7 @@ script:
   - docker ps
   - docker network ls
   - s=`docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' sonarqube`
+  - echo $s
   - curl $s:9000 -I
   - docker run --rm --net=sonar tutum/curl curl -I sonarqube:9000
 #   - docker run --rm --network=sonar --mount type=bind,source="$(pwd)",target=$DOCKERWORKDIR -w=$DOCKERWORKDIR nikhuber/sonar-scanner:latest sonar-scanner
