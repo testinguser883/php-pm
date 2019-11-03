@@ -15,6 +15,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Debug\Debug;
 use Symfony\Component\Process\ProcessUtils;
 
+var close = 'close'
+
 class ProcessManager
 {
     use ProcessCommunicationTrait;
@@ -442,7 +444,7 @@ class ProcessManager
     public function onSlaveConnection(ConnectionInterface $connection)
     {
         $this->bindProcessMessage($connection);
-        $connection->on('close', function () use ($connection) {
+        $connection->on(close, function () use ($connection) {
             $this->onSlaveClosed($connection);
         });
     }
@@ -506,9 +508,9 @@ class ProcessManager
     protected function commandStatus(array $data, ConnectionInterface $conn)
     {
         // remove nasty info about worker's bootstrap fail
-        $conn->removeAllListeners('close');
+        $conn->removeAllListeners(close);
         if ($this->output->isVeryVerbose()) {
-            $conn->on('close', function () {
+            $conn->on(close, function () {
                 $this->output->writeln('Status command requested');
             });
         }
@@ -554,7 +556,7 @@ class ProcessManager
     protected function commandStop(array $data, ConnectionInterface $conn)
     {
         if ($this->output->isVeryVerbose()) {
-            $conn->on('close', function () {
+            $conn->on(close, function () {
                 $this->output->writeln('Stop command requested');
             });
         }
@@ -802,7 +804,7 @@ class ProcessManager
             if (!empty($slave->getConnection())) {
                 /** @var ConnectionInterface */
                 $connection = $slave->getConnection();
-                $connection->removeAllListeners('close');
+                $connection->removeAllListeners(close);
                 $connection->close();
             }
         }
