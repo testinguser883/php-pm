@@ -4,7 +4,6 @@ namespace PHPPM\Tests;
 
 use PHPUnit\Framework\TestCase;
 
-
 class PhpPmTestCase extends TestCase
 {
     protected function getRequestHandlerMethod($method)
