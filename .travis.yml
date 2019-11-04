@@ -6,7 +6,7 @@ services:
 language: php
 
 php:
-  - 7.1
+  - 7.3
 
 install:
   - rm -f ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini
@@ -49,7 +49,7 @@ script:
 #   - docker run --rm --net=sonar tutum/curl curl -I sonarqube:9000
 #   - docker run --rm --mount type=bind,source="$(pwd)",target=$DOCKERWORKDIR -w=$DOCKERWORKDIR nikhuber/sonar-scanner:latest sonar-scanner
   - phpunit --configuration phpunit.xml.dist --coverage-text
-#  - docker run --rm --mount type=bind,source="$(pwd)",target=$DOCKERWORKDIR     -w=$DOCKERWORKDIR     nikhuber/sonar-scanner:latest sonar-scanner
+  - docker run --rm --mount type=bind,source="$(pwd)",target=$DOCKERWORKDIR     -w=$DOCKERWORKDIR     nikhuber/sonar-scanner:latest sonar-scanner
 
 matrix:
   fast_finish: true
