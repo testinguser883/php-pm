@@ -48,6 +48,8 @@ script:
 #   - curl $s:9000 -I
 #   - docker run --rm --net=sonar tutum/curl curl -I sonarqube:9000
 #   - docker run --rm --mount type=bind,source="$(pwd)",target=$DOCKERWORKDIR -w=$DOCKERWORKDIR nikhuber/sonar-scanner:latest sonar-scanner
+  - pecl install xdebug && docker-php-ext-enable xdebug
+  - sudo docker-php-ext-enable xdebug
   - phpunit --configuration phpunit.xml.dist --coverage-text
   - docker run --rm --mount type=bind,source="$(pwd)",target=$DOCKERWORKDIR     -w=$DOCKERWORKDIR     nikhuber/sonar-scanner:latest sonar-scanner
 
