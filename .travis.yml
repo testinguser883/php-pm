@@ -13,18 +13,6 @@ install:
   - composer validate
   - composer install
 
-tests:
-  name: Unit Tests
-  runs-on: ubuntu-latest
-  steps:
-    - name: "Checkout"
-      uses: actions/checkout@master
-    - name: "Install dependencies"
-      run: php7.0 $(which composer) install --no-interaction --no-progress --no-suggest
-    - name: "Run PHPUnit"
-      run: php7.0 vendor/bin/phpunit -c phpunit.xml.dist
-
-
 script:
 #   # Static analyzer check
 #   - if [ $TRAVIS_PHP_VERSION = '7.1' ]; then composer require "phpstan/phpstan:^0.9" && ./vendor/bin/phpstan analyze -c .phpstan.neon --level=4 --no-progress src;fi
@@ -60,7 +48,8 @@ script:
 #   - curl $s:9000 -I
 #   - docker run --rm --net=sonar tutum/curl curl -I sonarqube:9000
 #   - docker run --rm --mount type=bind,source="$(pwd)",target=$DOCKERWORKDIR -w=$DOCKERWORKDIR nikhuber/sonar-scanner:latest sonar-scanner
-  - docker run --rm --mount type=bind,source="$(pwd)",target=$DOCKERWORKDIR     -w=$DOCKERWORKDIR     nikhuber/sonar-scanner:latest sonar-scanner
+  - phpunit --configuration phpunit.xml.dist --coverage-text
+#  - docker run --rm --mount type=bind,source="$(pwd)",target=$DOCKERWORKDIR     -w=$DOCKERWORKDIR     nikhuber/sonar-scanner:latest sonar-scanner
 
 matrix:
   fast_finish: true
