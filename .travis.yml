@@ -50,7 +50,7 @@ script:
 #   - docker run --rm --mount type=bind,source="$(pwd)",target=$DOCKERWORKDIR -w=$DOCKERWORKDIR nikhuber/sonar-scanner:latest sonar-scanner
 #  - pecl install xdebug && docker-php-ext-enable xdebug
 #  - sudo docker-php-ext-enable xdebug
-  - brew install php73-xdebug
+  - sudo apt-get -y install php73-xdebug php71-xdebug
   - phpunit --configuration phpunit.xml.dist --coverage-text
   - docker run --rm --mount type=bind,source="$(pwd)",target=$DOCKERWORKDIR     -w=$DOCKERWORKDIR     nikhuber/sonar-scanner:latest sonar-scanner
 
