@@ -50,8 +50,6 @@ script:
 #   - docker run --rm --mount type=bind,source="$(pwd)",target=$DOCKERWORKDIR -w=$DOCKERWORKDIR nikhuber/sonar-scanner:latest sonar-scanner
 #  - pecl install xdebug && docker-php-ext-enable xdebug
 #  - sudo docker-php-ext-enable xdebug
-#  - sudo apt-get -y install php73-xdebug php71-xdebug
-#  - phpunit --configuration phpunit.xml.dist --coverage-text
   - sudo apt-get -y install jq
   - docker run --rm --mount type=bind,source="$(pwd)",target=$DOCKERWORKDIR     -w=$DOCKERWORKDIR     nikhuber/sonar-scanner:latest sonar-scanner
   - status=$(curl http://35.184.112.121:9000/api/qualitygates/project_status?projectKey=php-pm-remote-ci | jq '.projectStatus.status')
